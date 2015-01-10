@@ -1,6 +1,8 @@
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
+
+#test
 class Jsonify(HttpResponse):
 	"""docstring for jsonify"""
 	def __init__(self,content='',*arg, **kw):
