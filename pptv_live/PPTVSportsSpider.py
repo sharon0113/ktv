@@ -125,7 +125,7 @@ class PPTVSpider(object):
 			currentUrl = urlInfo ["url"]
 			currentPort = urlInfo ["port"].replace("\n", "")
 			currentName = unicode(urlInfo ["name"]).encode("utf-8")
-			vid = sportsModel(cursor).add_item(currentName , "sports", date)
+			vid = sportsModel(cursor).add_item("testName" , "sports", date)
 			print "downloading: "+ currentUrl
 			req = urllib2.Request(currentUrl , headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
