@@ -125,7 +125,7 @@ class PPTVSpider(object):
 			currentUrl = urlInfo ["url"]
 			currentPort = urlInfo ["port"].replace("\n", "")
 			currentName = unicode(urlInfo ["name"]).encode("utf-8")
-			vid = sportsModel(cursor).add_item(currentName , "sports", date, "00:00:01")
+			vid = sportsModel(cursor).add_item(currentName , "sports", date)
 			print "downloading: "+ currentUrl
 			req = urllib2.Request(currentUrl , headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
@@ -167,7 +167,7 @@ class PPTVSpider(object):
 				fp = open(ROOT+"ts/"+date+"-"+str(vid)+"-"+currentFeature+".ts", "w")
 				fp.write(tsContent)
 				fp.close()
-				newUrl = "http://121.41.85.39/m3u8/ts/"+date+"-"+str(vid)+"-"+currentFeature+".ts"
+				newUrl = "http://121.41.85.39/pptvlive/readts?date="+date+"&vid="+str(vid)+"&"+currentFeature
 				m3u8Content = m3u8Content.replace(urlItem, newUrl)
 				successTs += 1
 			print "Download finished, "+str(successTs)+"/"+str(len(urlList))+" ts files are downloaded successfully."
@@ -177,4 +177,5 @@ class PPTVSpider(object):
 			successCount += 1
 		print "Congratulations, download finished, "+str(successCount)+"/"+str(len(secondStepUrlList))+" is downloaded successfully."
 		print "Spider ceased."
+		return {"state":True, "info":str(successCount)+"/"+str(len(secondStepUrlList))+"succeeded"}
 		
