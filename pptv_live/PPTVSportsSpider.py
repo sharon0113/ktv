@@ -10,7 +10,7 @@ import json
 
 import os 
 
-ROOT = "/m3u8/"
+ROOT = "/mnt/m3u8/"
 date= "2015-01-07"
 cursor = connection.cursor()
 #ORIGINAL HTML RESPONSE

@@ -5,7 +5,7 @@ from sportsModel import sportsModel
 from django.db import connection
 from PPTVSportsSpider import PPTVSpider
 
-ROOT = "/m3u8/"
+ROOT = "/mnt/m3u8/"
 
 def get_list(request):
 	cursor = connection.cursor()
@@ -22,11 +22,11 @@ def read_m3u8(request):
 	vid = request.GET.get("vid", 0)
 	url = sportsModel(cursor).get_url(vid)
 	if url:
-		fp = open("/m3u8/"+url, "r")
-		content = fp.read()
+		with open(url) as fp:
+			content = fp.read()
 	else:
 		content = ""
-	return Jsonify(content)
+	return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
 def read_ts(request):
 	cursor=  connection.cursor()
 	vid = request.GET.get("vid", 0)
