@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.http import HttpResponse
 from utils import Jsonify
 from sportsModel import sportsModel
 from django.db import connection
@@ -33,6 +34,9 @@ def read_ts(request):
 	start = request.GET.get("start", 0)
 	during = request.GET.get("during", 10)
 	currentFeature = "start="+str(start)+"&during="+str(during)
-	fp = open(ROOT+"ts/"+date+"-"+str(vid)+"-"+currentFeature+".ts", "r")
-	content = fp.read()
-	return Jsonify(content)
+	path = ROOT+"ts/"+date+"-"+str(vid)+"-"+currentFeature+".ts"
+	with open(path,'rb') as fp:
+		content = fp.read()
+		return HttpResponse(content, content_type="video/MP2T")
+	# fp = open(, "r")
+	# return Jsonify(content)
