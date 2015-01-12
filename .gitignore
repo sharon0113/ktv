@@ -1,6 +1,9 @@
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
+.gitignore
+.pyc
+
 
 # Folder config file
 Desktop.ini
