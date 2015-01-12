@@ -9,7 +9,7 @@ urlpatterns = patterns("",
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^pptvlive/getlist',get_list),
     url(r'^pptvlive/spider',spider),
-    url(r'^pptvlive/readm3u8',read_m3u8),
+    url(r'^pptvlive/readm3u8[0-9]*.m3u',read_m3u8),
     url(r'^pptvlive/readts[0-9]*.ts',read_ts),
     #url(r'^pptvlive/getlist',include(get_list)),
 )
