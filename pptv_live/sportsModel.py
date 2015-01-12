@@ -14,9 +14,10 @@ class sportsModel(object):
 		result = self.cursor.fetchone()
 		try:
 			result = result[0]
-			currentUrl = "http://http://121.41.85.39/m3u8/"+"m3u8/"+date+"-"+str(result)+".m3u"
-			execute_String = "UPDATE m3u8sports set url= %s where vid = %s"
-			self.cursor.execute(execute_String, (currentUrl, result))
+			innerUrl = "/m3u8/m3u8New/"+date+"-"+str(result)+".m3u"
+			currentUrl = "http://121.41.85.39/readm3u8?vid="+str(result)
+			execute_String = "UPDATE m3u8sports set inurl= %s, url= %s where vid = %s"
+			self.cursor.execute(execute_String, (innerUrl, currentUrl, result))
 		except Exception, e:
 			print e
 			print "501 write resource database error"
@@ -36,6 +37,16 @@ class sportsModel(object):
 			currentJson["url"] = item[3]
 			jsonList.append(currentJson)
 		return jsonList
+
+	def get_url(self, vid):
+		execute_String = "SELECT inurl from m3u8sports where vid = %s"
+		self.cursor.execute(execute_String, (vid, ))
+		url = self.cursor.fetchone()
+		if url:
+			url = url[0]
+		else:
+			url = ""
+		return url
 
 
 
