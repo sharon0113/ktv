@@ -40,3 +40,14 @@ def read_ts(request):
 		return HttpResponse(content, content_type="video/MP2T")
 	# fp = open(, "r")
 	# return Jsonify(content)
+def get_precast(request):
+	cursor=  connection.cursor()
+	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
+	result = PPTVSpider(cursor).getPrecastList(date)
+	cursor.close()
+	return Jsonify(result)
+
+def read_m3u8_level2(request):
+	cursor=  connection.cursor()
+	vid = request.GET.get(vid, "0")
+	
