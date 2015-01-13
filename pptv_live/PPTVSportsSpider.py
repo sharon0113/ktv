@@ -3,7 +3,7 @@
 import urllib2
 from random import random
 from django.db import connection
-#from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 from sportsModel import sportsModel
 import re
 import json
@@ -11,7 +11,6 @@ import json
 import os 
 
 ROOT = "/mnt/m3u8/"
-date= "2015-01-07"
 cursor = connection.cursor()
 #ORIGINAL HTML RESPONSE
 
@@ -22,9 +21,7 @@ class PPTVSpider(object):
 		super(PPTVSpider, self).__init__()
 		self.cursor=cursor
 
-	def runSpider(self, date):
-
-		print "PPTV Video Spider initialized..."
+	def getBroadList(self, date):
 		req = urllib2.Request("http://live.pptv.com/api/subject_list?cb=load.cbs.cbcb_4&date="+date+"&type=35&tid=&cid=&offset=0", headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
@@ -40,14 +37,15 @@ class PPTVSpider(object):
 		regex = r"http:\\\/\\\/v.pptv\.com\\\/show\\\/[A-Za-z0-9]*\.html"
 		pattern = re.compile(regex)
 		matchGroup = pattern.findall(pageContent)
-		
+
 		urlNum = len(matchGroup)
 		urlGroup = []
 		for index in range(0, urlNum):
 			urlGroup.append(matchGroup[index].replace("\\", ""))
-		
-		print "There are "+ str(urlNum) + " videos today, start analysing."
-		
+		print urlGroup 
+		return urlGroup
+
+	def firstStepAnalyser(self, urlGroup):
 		firstStepUrlList = []
 		for url in urlGroup:
 			req = urllib2.Request(url, headers={
@@ -83,8 +81,9 @@ class PPTVSpider(object):
 			else:
 				print "701 error in match strp"
 				continue
-		print str(len(firstStepUrlList)) + "/" + str(urlNum) + " first step urls has been successfully fetched, start analysing."
-		
+		return firstStepUrlList
+
+	def secondStepAnalyser(self, firstStepUrlList):
 		secondStepUrlList = []
 		for url in firstStepUrlList:
 			req = urllib2.Request(url, headers={
@@ -116,8 +115,18 @@ class PPTVSpider(object):
 				print e
 				print "703 error in second analyse step"
 				continue
+		return secondStepUrlList
+
+	def runSpider(self, date):
+
+		print "PPTV Video Spider initialized..."
+		urlGroup = self.getBroadList(date)
+		print "There are "+ str(len(urlGroup)) + " videos today, start analysing."
+		firstStepUrlList = self.firstStepAnalyser(urlGroup)
+		print str(len(firstStepUrlList)) + "/" + str(len(urlGroup)) + " first step urls has been successfully fetched, start analysing."
+		secondStepUrlList = self.secondStepAnalyser(firstStepUrlList)
 		print str(len(secondStepUrlList)) + "/" + str(len(firstStepUrlList)) + " second step urls has been successfully fetched, start downloading."
-		
+
 		print "start downloading m3u8 profiles..."
 		successCount = 0
 		for urlInfo in secondStepUrlList:
@@ -167,7 +176,13 @@ class PPTVSpider(object):
 				fp = open(ROOT+"ts/"+date+"-"+str(vid)+"-"+currentFeature+".ts", "w")
 				fp.write(tsContent)
 				fp.close()
-				newUrl = "http://121.41.85.39/pptvlive/readts?date="+date+"&vid="+str(vid)+"&"+currentFeature
+				startPattern = re.compile(r'[0-9]*')
+				matcher = startPattern.search(startPattern)
+				if matcher:
+					start = matcher.group()
+				else:
+					start = "0"
+				newUrl = "http://121.41.85.39/pptvlive/readts"+str(vid)+str(start)+".ts?date="+date+"&vid="+str(vid)+"&"+currentFeature
 				m3u8Content = m3u8Content.replace(urlItem, newUrl)
 				successTs += 1
 			print "Download finished, "+str(successTs)+"/"+str(len(urlList))+" ts files are downloaded successfully."
@@ -178,4 +193,33 @@ class PPTVSpider(object):
 		print "Congratulations, download finished, "+str(successCount)+"/"+str(len(secondStepUrlList))+" is downloaded successfully."
 		print "Spider ceased."
 		return {"state":True, "info":str(successCount)+"/"+str(len(secondStepUrlList))+"succeeded"}
-		
+	
+	def getPrecastList(self, date):
+		#@date : it must be late than today
+		req = urllib2.Request("http://live.pptv.com/api/subject_list?cb=load.cbs.cbcb_4&date="+date+"&type=35&tid=&cid=&offset=0", headers={
+			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
+			})
+		try:
+			webpage = urllib2.urlopen(req)
+		except Exception, e:
+			print e
+			print "601 request fail in html page request"
+			return 
+		pageContent = webpage.read().replace("\/", "/").replace("\\\"", "\"")
+
+		soup = BeautifulSoup(pageContent)
+		table = soup.find('table')
+		trList = table.findAll("tr")
+		infoList = []
+		for item in trList:
+			currentInfo = {}
+			tdList = item.findAll("td")
+			currentInfo["date"] = date
+			currentInfo["starttime"] = tdList[0].text
+			currentInfo["type"] = tdList[1].text
+			currentInfo["name"] = tdList[2].find("div").contents[0].replace("\\n", "")
+			vid = sportsModel(cursor).add_item(currentInfo["name"], currentInfo["type"] , currentInfo["date"], "precast", currentInfo["starttime"], "23:59")
+			currentInfo["vid"] = vid
+			infoList.append(currentInfo)
+		return infoList
+
