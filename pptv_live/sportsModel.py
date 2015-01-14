@@ -77,20 +77,22 @@ class liveModel(object):
 		return vid
 
 	def getLiveList(self, date):
-		execute_String = "SELECT vid, name FROM m3u8live WHERE `date` = %s "
+		print date
+		execute_String = "SELECT vid, name, interface FROM m3u8live WHERE `date` = %s "
 		infoList = []
 		try:
-			self.cursor.execute(execute_String, date)
+			self.cursor.execute(execute_String, (date,))
 			infoList = self.cursor.fetchall()
 		except Exception, e:
 			print e
 			print "501 write resource database error"
+		print infoList
 		result = []
 		for info in infoList:
 			currentDict = {}
 			currentDict["vid"]=info[0]
 			currentDict["name"]=info[1]
-			currentDict["url"]=PORT+"read_live_m3u8"+str(currentDict["vid"])+".m3u8?vid="+str(currentDict["vid"])
+			currentDict["url"]=info[2]
 			result.append(currentDict)
 		return result
 
