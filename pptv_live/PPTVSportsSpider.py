@@ -5,9 +5,9 @@ from random import random
 from django.db import connection
 from BeautifulSoup import BeautifulSoup
 from sportsModel import sportsModel
+from datetime import datetime
 import re
 import json
-
 import os 
 
 ROOT = "/mnt/m3u8/"
@@ -156,7 +156,7 @@ class PPTVSpider(object):
 			currentUrl = urlInfo ["url"]
 			currentPort = urlInfo ["port"].replace("\n", "")
 			currentName = unicode(urlInfo ["name"]).encode("utf-8")
-			vid = sportsModel(cursor).add_item("testName" , "sports", date)
+			vid = sportsModel().add_item("testName" , "sports", date)
 			print "downloading: "+ currentUrl
 			req = urllib2.Request(currentUrl , headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
@@ -199,7 +199,7 @@ class PPTVSpider(object):
 				fp.write(tsContent)
 				fp.close()
 				startPattern = re.compile(r'[0-9]*')
-				matcher = startPattern.search(startPattern)
+				matcher = startPattern.search(currentFeature)
 				if matcher:
 					start = matcher.group()
 				else:
@@ -240,8 +240,6 @@ class PPTVSpider(object):
 			currentInfo["starttime"] = tdList[0].text
 			currentInfo["type"] = tdList[1].text
 			currentInfo["name"] = tdList[2].find("div").contents[0].replace("\\n", "")
-			vid = sportsModel(cursor).add_item(currentInfo["name"], currentInfo["type"] , currentInfo["date"], "precast", currentInfo["starttime"], "23:59")
-			currentInfo["vid"] = vid
 			infoList.append(currentInfo)
 		return infoList
 
