@@ -6,7 +6,7 @@ class sportsModel(object):
 
 	def __init__(self):
 		super(sportsModel, self).__init__()
-		self.cursor = connection.cursor
+		self.cursor = connection.cursor()
 
 	def add_item(self, name, category, date, state="finish", starttime="00:00", endtime="23:59"):
 		execute_String = "INSERT INTO m3u8sports(name, `date`, category, state, starttime, endtime) VALUES(\'{0}\', \'{1}\', \'{2}\', \'{3}\', \'{4}\',\' {5}\')".format(name, date, category, state, starttime, endtime)
@@ -56,7 +56,7 @@ class liveModel(object):
 
 	def __init__(self, cursor):
 		super(liveModel, self).__init__()
-		self.cursor = connection.cursor
+		self.cursor = connection.cursor()
 
 	def addLiveItem(self, name, date, url, state="live"):
 		execute_String = "INSERT INTO m3u8live(name, `date`, category, state, url) VALUES(\'{0}\', \'{1}\', \'{2}\', \'{3}\', \'{4}\')".format(name, date, category, state, url)
