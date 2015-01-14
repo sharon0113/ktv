@@ -3,7 +3,7 @@
 import urllib2
 from datetime import datetime
 from BeautifulSoup import BeautifulSoup
-# from django.db import connection
+from django.db import connection
 import os
 import re
 
@@ -15,14 +15,13 @@ M3U8SUBPATH = "/mnt/m3u8live/m3u8Sub/"
 M3U8NEWPATH = "/mnt/m3u8live/m3u8New/"
 TSPATH = "/mnt/m3u8live/ts/"
 
-#这个接口是在可以下载（延迟以后）反复调用的
 class M3u8LiveDownloader(object):
 
 	def __init__(self, url, downloadSet):
 		super(M3u8LiveDownloader, self).__init__()
 		date = datetime.now().strftime("%Y-%m-%d")
 		self.liveUrl = url
-		# self.cursor = connection.cursor()
+		self.cursor = connection.cursor()
 		request = urllib2.Request(self.liveUrl, headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
@@ -47,8 +46,8 @@ class M3u8LiveDownloader(object):
 			print "NOT MATCHED"
 			self.m3u8Url = "urlNotExisted"
 		self.name = date+"-Video:NAME_UNKNOWN"
-		# sportsModel(cursor).addLiveItem(self.name, date, self.liveUrl)
-		# self.vid = self.cursor.lastrowid
+		sportsModel(cursor).addLiveItem(self.name, date, self.liveUrl)
+		self.vid = self.cursor.lastrowid
 		self.vid = "101"
 		self.tsDownloadSet = downloadSet
 
@@ -123,8 +122,6 @@ class M3u8LiveDownloader(object):
 				continue
 		print "Congratulations, download finished, "+str(tsCount)+" downloaded."
 		return {"state":True, "downloadSet":self.tsDownloadSet}
-
-
 
 		
 
