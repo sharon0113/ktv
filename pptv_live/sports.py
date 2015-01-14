@@ -10,7 +10,7 @@ ROOT = "/mnt/m3u8/"
 def get_list(request):
 	cursor = connection.cursor()
 	date = request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
-	result = sportsModel(cursor).one_day_list(date)
+	result = sportsModel().one_day_list(date)
 	return Jsonify(result)
 
 def spider(request):
@@ -22,7 +22,7 @@ def spider(request):
 def read_m3u8(request):
 	cursor = connection.cursor()
 	vid = request.GET.get("vid", 0)
-	url = sportsModel(cursor).get_url(vid)
+	url = sportsModel().get_url(vid)
 	if url:
 		with open(url) as fp:
 			content = fp.read()
