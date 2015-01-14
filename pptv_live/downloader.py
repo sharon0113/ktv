@@ -113,7 +113,7 @@ class M3u8LiveDownloader(object):
 					else:
 						print str(tsCode) +"alreadyDownloaded, pass it"
 					resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-					resultPointer.write("""#EXTINF:5,\n"""+PORT+"read_ts_live?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
+					resultPointer.write("""#EXTINF:5,\n"""+PORT+"read_ts_live"+str(self.vid)+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
 					resultPointer.close()
 				break
 			except Exception,e:
