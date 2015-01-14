@@ -13,7 +13,7 @@ urlpatterns = patterns("",
     url(r'^pptvlive/readts[0-9]*.ts',read_ts),
     url(r'^pptvlive/getprecast',get_precast),
     url(r'^pptvlive/readlivem3u8[0-9]*.m3u',read_live_m3u8),
-    url(r'^pptvlive/readlivets[0-9]*.ts',read_llve_ts),
+    url(r'^pptvlive/readlivets[0-9]*.ts',read_live_ts),
     url(r'^pptvlive/getlivelist',get_current_live),
     #url(r'^pptvlive/getlist',include(get_list)),
 )
