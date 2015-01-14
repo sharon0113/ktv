@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.http import HttpResponse
 from utils import Jsonify
-from sportsModel import sportsModel
+from sportsModel import sportsModel, liveModel
 from django.db import connection
 from PPTVSportsSpider import PPTVSpider
 
@@ -53,11 +53,12 @@ def read_ts(request):
 		content = fp.read()
 		return HttpResponse(content, content_type="video/MP2T")
 
-def read_llve_ts(request):
+def read_live_ts(request):
 	vid = request.GET.get("vid", "0")
 	tsCode = request.GET.get("tsCode", "00000X")
 	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	path = TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts"
+	print path
 	with open(path,'rb') as fp:
 		content = fp.read()
 		return HttpResponse(content, content_type="video/MP2T")
@@ -69,6 +70,7 @@ def get_precast(request):
 	return Jsonify(result)
 
 def get_current_live(request):
+	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	infoList = liveModel().getLiveList(date)
-	return Jsonify(result)
+	return Jsonify(infoList)
 	
