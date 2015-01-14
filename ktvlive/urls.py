@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from pptv_live.sports import get_list,spider, read_m3u8, read_ts, get_precast
+from pptv_live.sports import get_list,spider, read_m3u8, read_ts, get_precast, read_live_m3u8, read_llve_ts
 urlpatterns = patterns("",
     # Examples:
     # url(r'^$', 'ktvlive.views.home', name='home'),
