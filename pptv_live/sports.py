@@ -12,11 +12,13 @@ def get_list(request):
 	date = request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	result = sportsModel(cursor).one_day_list(date)
 	return Jsonify(result)
+
 def spider(request):
 	cursor = connection.cursor()
 	date = request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	result = PPTVSpider(cursor).runSpider(date)
 	return Jsonify(result)
+
 def read_m3u8(request):
 	cursor = connection.cursor()
 	vid = request.GET.get("vid", 0)
@@ -27,6 +29,7 @@ def read_m3u8(request):
 	else:
 		content = ""
 	return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
+
 def read_ts(request):
 	cursor=  connection.cursor()
 	vid = request.GET.get("vid", 0)
@@ -38,16 +41,16 @@ def read_ts(request):
 	with open(path,'rb') as fp:
 		content = fp.read()
 		return HttpResponse(content, content_type="video/MP2T")
-	# fp = open(, "r")
-	# return Jsonify(content)
+
 def get_precast(request):
 	cursor=  connection.cursor()
 	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	result = PPTVSpider(cursor).getPrecastList(date)
-	cursor.close()
 	return Jsonify(result)
 
-def read_m3u8_level2(request):
-	cursor=  connection.cursor()
-	vid = request.GET.get(vid, "0")
+def read_live_m3u8(request):
+	pass
+
+def read_llve_ts(request):
+	pass
 	
