@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import connection
+import logging
+logger = logging.getLogger('appserver')
+
 PORT = "http://121.41.85.39/"
 
 class sportsModel(object):
@@ -13,8 +16,8 @@ class sportsModel(object):
 		try:
 			self.cursor.execute(execute_String)
 		except Exception, e:
-			print e
-			print "501 write resource database error"
+			logger.error(e)
+			logger.error("501 write resource database error")
 		vid = self.cursor.lastrowid
 		try:
 			innerUrl = "/mnt/m3u8/m3u8New/"+date+"-"+str(vid)+".m3u"
@@ -22,8 +25,8 @@ class sportsModel(object):
 			execute_String = "UPDATE m3u8sports set inurl= %s, url= %s where vid = %s"
 			self.cursor.execute(execute_String, (innerUrl, currentUrl, vid))
 		except Exception, e:
-			print e
-			print "501 url update error"
+			logger.error(e)
+			logger.error("501 url update error")
 			vid = 0
 
 		return vid
@@ -56,49 +59,37 @@ class liveModel(object):
 
 	def __init__(self):
 		super(liveModel, self).__init__()
+		connection = MySQLdb.connect(host="121.41.85.39", port=3306, user="root", passwd="chaw5216", db="pptv" )
 		self.cursor = connection.cursor()
 
 	def addLiveItem(self, name, date, url, state="live"):
-		execute_String = "INSERT INTO m3u8live(name, `date`, category, state, url) VALUES(\'{0}\', \'{1}\', \'{2}\', \'{3}\', \'{4}\')".format(name, date, category, state, url)
+		execute_String = "INSERT INTO m3u8live(name, `date`, category, state, url) VALUES(\'{0}\', \'{1}\', \'{2}\', \'{3}\', \'{4}\')".format(name, date, "liveSports", state, url)
 		try:
 			self.cursor.execute(execute_String)
 		except Exception, e:
-			print e
-			print "501 write resource database error"
+			logger.error(e)
+			logger.error("501 write resource database error")
 		vid = self.cursor.lastrowid
 		try:
-			interface = PORT+"read_m3u8_live"+str(vid)+".m3u?vid="+str(vid)
+			interface = PORT+"pptvlive/readlivem3u8"+str(vid)+".m3u?vid="+str(vid)
 			execute_String = "UPDATE m3u8live SET interface = %s  WHERE vid = %s"
 			self.cursor.execute(execute_String, (interface, vid))
 		except Exception, e:
-			print e
-			print "501 url update error"
+			logger.error(e)
+			logger.error("503 url update error")
 			vid = 0
 		return vid
 
-	def getLiveList(self, date):
-		print date
-		execute_String = "SELECT vid, name, interface FROM m3u8live WHERE `date` = %s "
-		infoList = []
+	def getVidByUrl(self, url):
+		execute_String = "SELECT vid FROM m3u8live WHERE url = %s"
 		try:
-			self.cursor.execute(execute_String, (date,))
-			infoList = self.cursor.fetchall()
+			self.cursor.execute(execute_String, (url, ))
 		except Exception, e:
-			print e
-			print "501 write resource database error"
-		print infoList
-		result = []
-		for info in infoList:
-			currentDict = {}
-			currentDict["vid"]=info[0]
-			currentDict["name"]=info[1]
-			currentDict["url"]=info[2]
-			result.append(currentDict)
-		return result
-
-
-
-
-
-
-
+			logger.error(e)
+			logger.error("501 inquire vid by url error")
+		info = self.cursor.fetchone()
+		if info:
+			vid = info[0]
+		else:
+			vid = None
+		return vid

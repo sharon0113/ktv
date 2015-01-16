@@ -9,6 +9,9 @@ from datetime import datetime
 import re
 import json
 import os 
+import logging
+
+logger = logging.getLogger('appserver')
 
 ROOT = "/mnt/m3u8/"
 cursor = connection.cursor()
@@ -28,8 +31,8 @@ class PPTVSpider(object):
 		try:
 			webpage = urllib2.urlopen(req)
 		except Exception, e:
-			print e
-			print "601 request fail in html page request"
+			logger.error(e)
+			logger.error("601 request fail in html page request")
 		pageContent = webpage.read()
 		
 		#ORIGINAL URL LIST
@@ -53,8 +56,8 @@ class PPTVSpider(object):
 			try:
 				webpage = urllib2.urlopen(req)
 			except Exception, e:
-				print e
-				print "602 request fail in first step request"
+				logger.error(e)
+				logger.error("602 request fail in first step request")
 				continue
 			pageContent = webpage.read()
 			pageContent=pageContent.replace(" ", "").replace("\t", "").replace("\n", "")
@@ -74,11 +77,11 @@ class PPTVSpider(object):
 					currentUrl = "http://web-play.pptv.com/webplay3-0-"+idValue+".xml?version=4&type=m3u8.web.pad&kk="+kkValue+"&o=v.pptv.com&rcc_id=0&cb=getPlayEncode"
 					firstStepUrlList.append(currentUrl)
 				except Exception, e:
-					print e
-					print "702 error in first analyse step"
+					logger.error(e)
+					logger.error("702 error in first analyse step")
 					continue
 			else:
-				print "701 error in match strp"
+				logger.error("701 error in match strp")
 				continue
 		return firstStepUrlList
 
@@ -91,8 +94,8 @@ class PPTVSpider(object):
 			try:
 				webpage = urllib2.urlopen(req)
 			except Exception, e:
-				print e
-				print "603 request fail in second step request"
+				logger.error(e)
+				logger.error("603 request fail in second step request")
 				break
 			pageContent = webpage.read()
 			pageContent=pageContent.replace("getPlayEncode(", "").rstrip(";()")
@@ -111,22 +114,22 @@ class PPTVSpider(object):
 				currentInfo = {"name":name, "url":currentUrl, "port":port}
 				secondStepUrlList.append(currentInfo)
 			except Exception, e:
-				print e
-				print "703 error in second analyse step"
+				logger.error(e)
+				logger.error("703 error in second analyse step")
 				continue
 		return secondStepUrlList
 
 	def runSpider(self, date):
 
-		print "PPTV Video Spider initialized..."
+		logger.debug("PPTV Video Spider initialized...")
 		urlGroup = self.getBroadList(date)
-		print "There are "+ str(len(urlGroup)) + " videos today, start analysing."
+		logger.debug("There are "+ str(len(urlGroup)) + " videos today, start analysing.")
 		firstStepUrlList = self.firstStepAnalyser(urlGroup)
-		print str(len(firstStepUrlList)) + "/" + str(len(urlGroup)) + " first step urls has been successfully fetched, start analysing."
+		logger.debug(str(len(firstStepUrlList)) + "/" + str(len(urlGroup)) + " first step urls has been successfully fetched, start analysing.")
 		secondStepUrlList = self.secondStepAnalyser(firstStepUrlList)
-		print str(len(secondStepUrlList)) + "/" + str(len(firstStepUrlList)) + " second step urls has been successfully fetched, start downloading."
+		logger.debug(str(len(secondStepUrlList)) + "/" + str(len(firstStepUrlList)) + " second step urls has been successfully fetched, start downloading.")
 
-		print "start downloading m3u8 profiles..."
+		logger.debug("start downloading m3u8 profiles...")
 		successCount = 0
 		for urlInfo in secondStepUrlList:
 			successTs = 0
@@ -134,15 +137,15 @@ class PPTVSpider(object):
 			currentPort = urlInfo ["port"].replace("\n", "")
 			currentName = unicode(urlInfo ["name"]).encode("utf-8")
 			vid = sportsModel().add_item("testName" , "sports", date)
-			print "downloading: "+ currentUrl
+			logger.debug("downloading: "+ currentUrl)
 			req = urllib2.Request(currentUrl , headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
 			try:
 				m3u8page = urllib2.urlopen(req)
 			except Exception, e:
-				print e
-				print "604 request fail in m3u8 request"
+				logger.error(e)
+				logger.error("604 request fail in m3u8 request")
 				continue
 			m3u8Content = m3u8page.read()
 			replacePattern = re.compile(r"\/[A-Za-z0-9]*\.ts\?start=[0-9]*&")
@@ -155,7 +158,7 @@ class PPTVSpider(object):
 			urlPattern = re.compile(r"http:\/\/[0-9\.]*\/[A-Za-z0-9]*\.ts\?start=[0-9]*&during=[0-9]*&type=m3u8.web.pad&k=[A-Za-z0-9-]*&segment=[A-Za-z0-9_]*")
 			urlList = urlPattern.findall(m3u8Content)
 			for urlItem in urlList:
-				print "downloading:" + urlItem
+				logger.debug("downloading:" + urlItem)
 				featurePattern = re.compile(r"start=[0-9]*&during=[0-9]*")
 				match = featurePattern.search(urlItem)
 				if match:
@@ -168,8 +171,8 @@ class PPTVSpider(object):
 				try:
 					tsPage = urllib2.urlopen(req)
 				except Exception, e:
-					print e
-					print "605 request fail in ts request"
+					logger.error(e)
+					logger.error("605 request fail in ts request")
 					continue
 				tsContent = tsPage.read()
 				fp = open(ROOT+"ts/"+date+"-"+str(vid)+"-"+currentFeature+".ts", "w")
@@ -184,13 +187,13 @@ class PPTVSpider(object):
 				newUrl = "http://121.41.85.39/pptvlive/readts"+str(vid)+str(start)+".ts?date="+date+"&vid="+str(vid)+"&"+currentFeature
 				m3u8Content = m3u8Content.replace(urlItem, newUrl)
 				successTs += 1
-			print "Download finished, "+str(successTs)+"/"+str(len(urlList))+" ts files are downloaded successfully."
+			logger.debug("Download finished, "+str(successTs)+"/"+str(len(urlList))+" ts files are downloaded successfully.")
 			fp = open(ROOT+"m3u8New/"+date+"-"+str(vid)+".m3u", "w") 
 			fp.write(m3u8Content)
 			fp.close()
 			successCount += 1
-		print "Congratulations, download finished, "+str(successCount)+"/"+str(len(secondStepUrlList))+" is downloaded successfully."
-		print "Spider ceased."
+		logger.debug("Congratulations, download finished, "+str(successCount)+"/"+str(len(secondStepUrlList))+" is downloaded successfully.")
+		logger.debug("Spider ceased.")
 		return {"state":True, "info":str(successCount)+"/"+str(len(secondStepUrlList))+"succeeded"}
 	
 	def getPrecastList(self, date):
@@ -201,8 +204,8 @@ class PPTVSpider(object):
 		try:
 			webpage = urllib2.urlopen(req)
 		except Exception, e:
-			print e
-			print "601 request fail in html page request"
+			logger.error(e)
+			logger.error("601 request fail in html page request")
 			return 
 		pageContent = webpage.read().replace("\/", "/").replace("\\\"", "\"")
 

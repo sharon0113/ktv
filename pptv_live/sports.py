@@ -4,6 +4,8 @@ from utils import Jsonify
 from sportsModel import sportsModel, liveModel
 from django.db import connection
 from PPTVSportsSpider import PPTVSpider
+import logging
+logger = logging.getLogger('appserver')
 
 ROOT = "/mnt/m3u8/"
 M3U8NEWPATH = "/mnt/m3u8live/m3u8New/"
@@ -58,7 +60,7 @@ def read_live_ts(request):
 	tsCode = request.GET.get("tsCode", "00000X")
 	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	path = TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts"
-	print path
+	logger.debug(path)
 	with open(path,'rb') as fp:
 		content = fp.read()
 		return HttpResponse(content, content_type="video/MP2T")

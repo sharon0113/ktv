@@ -30,8 +30,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.auth',
+    #'django.contrib.admin',
+    # 'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -43,8 +43,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -60,10 +60,10 @@ WSGI_APPLICATION = 'ktvlive.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-	'NAME':	'pptv',
+	'NAME':'resource',
 	'USER':	'root',
 	'HOST': '127.0.0.1',
-	'PASSWORD': 'chaw5216',
+	'PASSWORD': '',
 	'PORT': '3306',
     }
 }
@@ -86,3 +86,41 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(pathname)s %(lineno)d:%(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file':
+            {
+                'level':
+                    'DEBUG',
+                'class':
+                    'logging.FileHandler',
+                'formatter':
+                    'verbose',
+                'filename':
+                    BASE_DIR+'/debug.log'
+            },
+        'console':{
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'appserver': {              # define a logger - give it a name
+            'handlers': ['file'], # specify what handler to associate
+            'level': 'DEBUG',                 # specify the logging level
+            'propagate': True,
+        }
+    },
+}
