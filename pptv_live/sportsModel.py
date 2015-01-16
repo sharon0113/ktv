@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import connection
 from datetime import datetime
-import logging
+import logging ,time
 logger = logging.getLogger('appserver')
 
 PORT = "http://121.41.85.39/"
