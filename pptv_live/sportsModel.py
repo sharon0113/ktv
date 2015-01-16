@@ -126,4 +126,6 @@ class liveModel(object):
 		testDict["pictureurl"]="http://staticimage.yiqiding.com/hotvideo/football.png"
 		testDict["type"]=u"测试"
 		result.append(testDict)
-		return result
+		resultDict = {}
+		resultDict["live"]=result
+		return resultDict
