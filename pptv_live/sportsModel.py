@@ -60,7 +60,6 @@ class liveModel(object):
 
 	def __init__(self):
 		super(liveModel, self).__init__()
-		connection = MySQLdb.connect(host="121.41.85.39", port=3306, user="root", passwd="chaw5216", db="pptv" )
 		self.cursor = connection.cursor()
 
 	def addLiveItem(self, name, date, url, state="live"):
@@ -126,4 +125,5 @@ class liveModel(object):
 		testDict["end"]="1521992732"
 		testDict["pictureurl"]="http://staticimage.yiqiding.com/hotvideo/football.png"
 		testDict["type"]=u"测试"
+		result.append(testDict)
 		return result
