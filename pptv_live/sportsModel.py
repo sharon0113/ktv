@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import connection
+from datetime import datetime
 import logging
 logger = logging.getLogger('appserver')
 
@@ -93,3 +94,36 @@ class liveModel(object):
 		else:
 			vid = None
 		return vid
+
+	def getLiveList(self, date):
+		execute_String = "SELECT vid, name, interface FROM m3u8live WHERE `date` = %s "
+		infoList = []
+		try:
+			self.cursor.execute(execute_String, (date,))
+			infoList = self.cursor.fetchall()
+		except Exception, e:
+			print e
+			print "501 write resource database error"
+		print infoList
+		result = []
+		for info in infoList:
+			currentDict = {}
+			currentDict["lid"]=0
+			currentDict["name"]=info[1]
+			currentDict["url"]=info[2]
+			currentDict["startime"]=datetime.now().strftime("%T")
+			currentDict["start"]=time.mktime(datetime.now().timetuple())
+			currentDict["end"]="1451577601"
+			currentDict["pictureurl"]="http://staticimage.yiqiding.com/hotvideo/football.png"
+			currentDict["type"]=""
+			result.append(currentDict)
+		testDict = {}
+		testDict["lid"]=111111
+		testDict["title"]=u"曼城"
+		testDict["url"]="http://guesssongfile.yiqiding.com/Manchester_City/vod.m3u8"
+		testDict["startime"]="01:00"
+		testDict["start"]="1521219632.0"
+		testDict["end"]="1521992732"
+		testDict["pictureurl"]="http://staticimage.yiqiding.com/hotvideo/football.png"
+		testDict["type"]=u"测试"
+		return result
