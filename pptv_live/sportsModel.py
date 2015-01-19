@@ -95,10 +95,10 @@ class liveModel(object):
 		return vid
 
 	def getLiveList(self, date):
-		execute_String = "SELECT vid, name, interface FROM m3u8live WHERE `date` = %s "
+		execute_String = "SELECT vid, name, interface FROM m3u8live WHERE `date` = %s  and `state` = %s"
 		infoList = []
 		try:
-			self.cursor.execute(execute_String, (date,))
+			self.cursor.execute(execute_String, (date, "live"))
 			infoList = self.cursor.fetchall()
 		except Exception, e:
 			print e
