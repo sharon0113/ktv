@@ -108,7 +108,7 @@ class liveModel(object):
 		for info in infoList:
 			currentDict = {}
 			currentDict["lid"]=0
-			currentDict["name"]=info[1]
+			currentDict["title"]=info[1]
 			currentDict["url"]=info[2]
 			currentDict["startime"]=datetime.now().strftime("%T")
 			currentDict["start"]=time.mktime(datetime.now().timetuple())
