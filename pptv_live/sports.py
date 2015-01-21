@@ -36,13 +36,13 @@ def read_m3u8(request):
 def read_live_m3u8(request):
 	vid = request.GET.get("vid", 0)
 	date = datetime.now().strftime("%Y-%m-%d")
-	url = M3U8NEWPATH+date+"-"+str(vid)+".m3u"
+	path = M3U8NEWPATH+date+"-"+str(vid)+".m3u"
 	while(True):
 		logger.debug("############DEBUG############")
 		logger.debug("request for m3u8"+path+"at:  "+datetime.now().strftime("%T"))
 		logger.debug("############DEBUG############")
 		try:
-			with open(url) as fp:
+			with open(path) as fp:
 				content = fp.read()
 			return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
 		except Exception, e:
