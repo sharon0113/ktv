@@ -5,6 +5,7 @@ from sportsModel import sportsModel, liveModel
 from django.db import connection
 from PPTVSportsSpider import PPTVSpider
 import logging
+from time import sleep
 logger = logging.getLogger('appserver')
 
 ROOT = "/mnt/m3u8/"
@@ -61,9 +62,18 @@ def read_live_ts(request):
 	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	path = TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts"
 	logger.debug(path)
-	with open(path,'rb') as fp:
-		content = fp.read()
-		return HttpResponse(content, content_type="video/MP2T")
+	logger.debug(datetime.now().strftime("%T"))
+	while(True):
+		try:
+			with open(path,'rb') as fp:
+				content = fp.read()
+				return HttpResponse(content, content_type="video/MP2T")
+		except Exception, e:
+			debug.logger(e)
+			debug.logger("301 can't get ts file")
+			sleep(1)
+			continue
+
 
 def get_precast(request):
 	cursor=  connection.cursor()
