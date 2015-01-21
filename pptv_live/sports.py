@@ -46,8 +46,8 @@ def read_live_m3u8(request):
 				content = fp.read()
 			return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
 		except Exception, e:
-			debug.logger(e)
-			debug.logger("301 can't get ts file")
+			logger.debug(e)
+			logger.debug("301 can't get ts file")
 			sleep(1)
 			continue
 
@@ -78,8 +78,8 @@ def read_live_ts(request):
 				content = fp.read()
 			return HttpResponse(content, content_type="video/MP2T")
 		except Exception, e:
-			debug.logger(e)
-			debug.logger("301 can't get ts file")
+			logger.debug(e)
+			logger.debug("301 can't get ts file")
 			sleep(1)
 			continue
 
