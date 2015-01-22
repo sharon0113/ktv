@@ -37,19 +37,17 @@ def read_live_m3u8(request):
 	vid = request.GET.get("vid", 0)
 	date = datetime.now().strftime("%Y-%m-%d")
 	path = M3U8NEWPATH+date+"-"+str(vid)+".m3u"
-	while(True):
-		logger.debug("############DEBUG############")
-		logger.debug("request for m3u8"+path+"at:  "+datetime.now().strftime("%T"))
-		logger.debug("############DEBUG############")
-		try:
-			with open(path) as fp:
-				content = fp.read()
-			return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
-		except Exception, e:
-			logger.debug(e)
-			logger.debug("301 can't get ts file")
-			sleep(1)
-			continue
+	logger.debug("############DEBUG############")
+	logger.debug("request for m3u8"+path+"at:  "+datetime.now().strftime("%T"))
+	logger.debug("############DEBUG############")
+	try:
+		with open(path) as fp:
+		content = fp.read()
+		return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
+	except Exception, e:
+		logger.debug(e)
+		logger.debug("302 can't get m3u8 file")
+		return HttpResponse("ERROR")
 
 def read_ts(request):
 	cursor=  connection.cursor()
@@ -69,19 +67,17 @@ def read_live_ts(request):
 	date =  request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
 	path = TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts"
 	logger.debug(datetime.now().strftime("%T"))
-	while(True):
-		logger.debug("############DEBUG############")
-		logger.debug("request for ts"+path+"at:  "+datetime.now().strftime("%T"))
-		logger.debug("############DEBUG############")
-		try:
-			with open(path,'rb') as fp:
-				content = fp.read()
-			return HttpResponse(content, content_type="video/MP2T")
-		except Exception, e:
-			logger.debug(e)
-			logger.debug("301 can't get ts file")
-			sleep(1)
-			continue
+	logger.debug("############DEBUG############")
+	logger.debug("request for ts"+path+"at:  "+datetime.now().strftime("%T"))
+	logger.debug("############DEBUG############")
+	try:
+		with open(path,'rb') as fp:
+			content = fp.read()
+		return HttpResponse(content, content_type="video/MP2T")
+	except Exception, e:
+		logger.debug(e)
+		logger.debug("301 can't get ts file")
+		return HttpResponse("ERROR")
 
 
 def get_precast(request):
