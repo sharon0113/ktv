@@ -184,7 +184,7 @@ class PPTVSpider(object):
 					start = matcher.group()
 				else:
 					start = "0"
-				newUrl = "http://121.41.85.39/pptvlive/readts"+str(vid)+str(start)+".ts?date="+date+"&vid="+str(vid)+"&"+currentFeature
+				newUrl = "http://*********/pptvlive/readts"+str(vid)+str(start)+".ts?date="+date+"&vid="+str(vid)+"&"+currentFeature
 				m3u8Content = m3u8Content.replace(urlItem, newUrl)
 				successTs += 1
 			logger.debug("Download finished, "+str(successTs)+"/"+str(len(urlList))+" ts files are downloaded successfully.")

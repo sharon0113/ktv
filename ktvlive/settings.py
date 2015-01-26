@@ -60,10 +60,10 @@ WSGI_APPLICATION = 'ktvlive.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-	'NAME':'resource',
+	'NAME':'pptv',
 	'USER':	'root',
 	'HOST': '127.0.0.1',
-	'PASSWORD': '',
+	'PASSWORD': '******',
 	'PORT': '3306',
     }
 }

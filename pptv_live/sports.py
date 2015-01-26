@@ -42,7 +42,7 @@ def read_live_m3u8(request):
 	logger.debug("############DEBUG############")
 	try:
 		with open(path) as fp:
-		content = fp.read()
+			content = fp.read()
 		return HttpResponse(content, content_type="application/vnd.apple.mpegurl")
 	except Exception, e:
 		logger.debug(e)
